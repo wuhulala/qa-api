@@ -6,6 +6,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * author： wuhulala
@@ -27,7 +29,9 @@ public class JwtManager {
 
     public void addJwt(String key, String jwtBody) {
         String realKey = getRealKey(key);
-        valueOperations.set(realKey, jwtBody, TokenUtils.EXP_TIMES);
+        Date date = new Date();
+
+        valueOperations.set(realKey, jwtBody, TokenUtils.EXP_TIMES, TimeUnit.SECONDS);
     }
 
     public String getJwt(String key) {

@@ -45,12 +45,11 @@ public class AccountService {
 
         if (null != result) {
             String token = TokenUtils.generateToken(result.getId(), result.getName(), getRolesString(result.getId()));
-            account.setToken(token);
+            result.setToken(token);
             jwtManager.addJwt(result.getId() + "", token);
-            LOGGER.info("用户" + result.getId() + "登录成功");
-            account.setLastLogin(new Date());
-            accountMapper.updateLastLogin(account);
-            return account;
+            result.setLastLogin(new Date());
+            accountMapper.updateLastLogin(result);
+            return result;
         }
         return null;
     }

@@ -39,7 +39,8 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ApiOperation(value = "账户登录", notes = "账户登录")
     public BaseResult<Account> login(@RequestBody Account account, HttpServletRequest request) {
-        return accountService.login(account, request) == null ? fillErrorBaseResult(ReturnCode.LOGIN_ERROR) : fillSuccessBaseResult(account);
+        Account result = accountService.login(account, request);
+        return result == null ? fillErrorBaseResult(ReturnCode.LOGIN_ERROR) : fillSuccessBaseResult(result);
     }
 
     /*

@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class TokenUtils {
 
-    public static final int EXP_TIMES = 60 * 60 * 12 ;
+    public static final int EXP_TIMES = 60 * 60 * 12; //默认12小时过期
     /**
      * 生成jwT
      *
@@ -25,7 +25,7 @@ public class TokenUtils {
     public static String generateToken(Long id, String name, String roles) {
         Date nowDate = new Date();
         return Jwts.builder()
-                .setSubject(id + "")
+                .setSubject(id.toString())
                 .claim("name", name)
                 .claim("roles", roles)
                 .setIssuedAt(nowDate)
