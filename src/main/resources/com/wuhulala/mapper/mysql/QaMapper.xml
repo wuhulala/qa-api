@@ -1,0 +1,152 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.wuhulala.dal.mapper.QaMapper">
+
+
+    <resultMap type="Qa" id="QaBaseResult">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content" typeHandler="com.wuhulala.dal.converter.ConvertBlobTypeHandler"/>
+        <result column="readNumber" property="read_number"/>
+        <result column="likeNumber" property="like_number"/>
+        <result column="replyNumber" property="reply_number"/>
+        <result column="img" property="img"/>
+        <result column="authorId" property="author_id"/>
+        <result column="gmtCreate" property="gmt_create"/>
+        <result column="gmtModify" property="gmt_modify"/>
+    </resultMap>
+
+    <resultMap type="Qa" id="PageBaseResult">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="content" property="content" typeHandler="com.wuhulala.dal.converter.ConvertBlobTypeHandler"/>
+        <result column="read_number" property="readNumber"/>
+        <result column="like_number" property="likeNumber"/>
+        <result column="reply_number" property="replyNumber"/>
+        <result column="img" property="img"/>
+        <result column="author_id" property="authorId"/>
+        <result column="gmt_create" property="gmtCreate"/>
+        <result column="gmt_modify" property="gmtModify"/>
+        <association property="author" resultMap="AuthorBaseResult"/>
+    </resultMap>
+
+    <resultMap id="AuthorBaseResult" type="Account">
+        <id column="author_id" property="id"/>
+        <result column="author_name" property="name"/>
+    </resultMap>
+
+    <sql id="BaseAssociationColumn">
+        a.id as id,
+        a.title as title,
+        a.content as content,
+        a.read_number as read_number,
+        a.like_number as like_number,
+        a.reply_number as reply_number,
+        a.img as img,
+        a.author_id as author_id,
+        a.gmt_create as gmt_create,
+        a.gmt_modify as gmt_create,
+        b.name as author_name
+    </sql>
+
+    <sql id="BaseColumn">
+        id,title,content,read_number,like_number,reply_number,img,author_id,gmt_create,gmt_modify
+    </sql>
+
+    <sql id="InsertColumn">
+        title,content,
+        <if test="img != null and img != ''">
+            #{img},
+        </if>
+        author_id,gmt_create,gmt_modify
+    </sql>
+
+    <sql id="InsertListColumn">
+        title,content,img,author_id,gmt_create,gmt_modify
+    </sql>
+
+
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
+        insert into tb_qa(<include refid="InsertColumn"/>)
+        values(#{title},#{content},
+       <if test="img != null and img != ''">
+            #{img},
+        </if>
+        #{authorId},now(),now())
+    </insert>
+
+    <insert id="insertList"  parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id" flushCache="true" >
+        insert into tb_qa(<include refid="InsertListColumn"/>)
+        values
+        <foreach collection="list" separator="," index="index" item="item">
+            (#{item.title},#{item.content},
+            #{item.img},
+            #{item.authorId},now(),now())
+        </foreach>
+
+    </insert>
+
+    <select id="findByIdList" resultMap="QaBaseResult">
+        select <include refid="BaseColumn"/>
+        from tb_qa
+        where id in
+        (
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+    <select id="findById" resultMap="PageBaseResult">
+        select <include refid="BaseAssociationColumn"/>
+        from tb_qa a , tb_account b
+        where a.author_id = b.id
+        and
+        a.id = #{id}
+    </select>
+
+    <select id="findAll" resultMap="QaBaseResult">
+        select <include refid="BaseAssociationColumn"/>
+        from tb_qa a left outer join tb_account b
+        on a.author_id = b.id
+    </select>
+
+
+  <!--  <sql id="PageQueryColumn">
+
+    </sql>
+-->
+    <select id="findWithPage" resultMap="PageBaseResult"  parameterType="com.wuhulala.model.Page">
+        select <include refid="BaseAssociationColumn"/>
+           from tb_qa a left outer join tb_account b
+           on a.author_id = b.id
+           and(b.name like '%${page.keyword}%'
+           or a.title like '%${page.keyword}%')
+           limit #{page.start},#{page.length}
+    </select>
+
+    <select id="findCountByPage" resultType="java.lang.Integer"  parameterType="com.wuhulala.model.Page">
+        select count(1)
+        from tb_qa a left outer join tb_account b
+        on a.author_id = b.id
+        and(b.name like '%${page.keyword}%'
+        OR a.title like '%${page.keyword}%')
+    </select>
+
+    <select id="selectCount" resultType="java.lang.Integer">
+        select count(1)
+        from tb_qa
+    </select>
+
+    <select id="findLeastQa" parameterType="java.lang.Integer" resultMap="PageBaseResult" >
+        select <include refid="BaseAssociationColumn"/>
+        from ( select *
+        from tb_qa
+        order by id desc
+        limit 0,#{number})a
+        left outer join tb_account b
+        on a.author_id = b.id
+    </select>
+</mapper>
