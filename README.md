@@ -7,3 +7,4 @@
 2. mybatis
 3. redis
 4. swaggerUI
+5. jwt
