@@ -22,7 +22,7 @@ import java.util.List;
  */
 @CrossOrigin(ApiConstants.CROSS_ADDRESS)
 @RestController
-@RequestMapping("qa")
+@RequestMapping("/api/qa")
 public class QaController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(QaController.class);

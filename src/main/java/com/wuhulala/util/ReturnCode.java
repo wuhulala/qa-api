@@ -32,7 +32,7 @@ public enum ReturnCode {
 	EDIT_PASS_PASSWORD_IS_ERROR(555,"1203","原密码错误"),
 
 	//退出
-	LOGOUT_ERROR(555,"1301","退出登录错误");
+	LOGOUT_ERROR(555,"1301","退出登录错误"), ERROR_401(401,"401" ,"没有权限" );
 
 	public static ReturnCode getReturnCode(String returnCode){
 		for( ReturnCode e : ReturnCode.values() ){

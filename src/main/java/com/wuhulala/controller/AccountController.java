@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/account")
-@Api(value = "account",description = "账户接口")
-public class AccountController extends BaseController{
+@Api(value = "account", description = "账户接口")
+public class AccountController extends BaseController {
     private final AccountService accountService;
 
     @Autowired
@@ -32,16 +32,14 @@ public class AccountController extends BaseController{
 
     /**
      * 登录
+     *
      * @param account 账户信息
      * @return BaseResult
      */
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
-    @ApiOperation(value = "账户登录",notes = "账户登录")
-    public BaseResult<Account> login(@RequestBody Account account, HttpServletRequest request){
-
-        BaseResult<Account> result = new BaseResult<>();
-        account = accountService.login(account,request);
-        return account == null ? fillErrorBaseResult(ReturnCode.LOGIN_ERROR) : fillSuccessBaseResult(account);
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @ApiOperation(value = "账户登录", notes = "账户登录")
+    public BaseResult<Account> login(@RequestBody Account account, HttpServletRequest request) {
+        return accountService.login(account, request) == null ? fillErrorBaseResult(ReturnCode.LOGIN_ERROR) : fillSuccessBaseResult(account);
     }
 
     /*
@@ -51,29 +49,29 @@ public class AccountController extends BaseController{
      * @return
      */
 
-    @RequestMapping(value = "/register",method = RequestMethod.POST)
-    public BaseResult<?> register(String name, String password){
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public BaseResult<?> register(String name, String password) {
         BaseResult<?> result = new BaseResult<>();
-        int tmp = accountService.register(name,password);
-        if(tmp == 1) result.setReturnCode(ReturnCode.REGISTER_NAME_IS_EXIST);
-        if(tmp == 2) result.setReturnCode(ReturnCode.REGISTER_ERROR);
-        if(tmp == 3) result.setReturnCode(ReturnCode.REGISTER_SUCCESS);
+        int tmp = accountService.register(name, password);
+        if (tmp == 1) result.setReturnCode(ReturnCode.REGISTER_NAME_IS_EXIST);
+        if (tmp == 2) result.setReturnCode(ReturnCode.REGISTER_ERROR);
+        if (tmp == 3) result.setReturnCode(ReturnCode.REGISTER_SUCCESS);
         return result;
     }
 
     /*
      * 修改密码
      */
-    @RequestMapping(value = "/{id}/pass",method = RequestMethod.PUT)
+    @RequestMapping(value = "/{id}/pass", method = RequestMethod.PUT)
     public BaseResult<?> editPass(@PathVariable("id") Long id,
                                   @RequestParam("password") String password,
-                                  @RequestParam("new_password")String newPassword){
+                                  @RequestParam("new_password") String newPassword) {
         BaseResult<?> result = new BaseResult<>();
-        int tmp = accountService.editPassword(id,password,newPassword);
+        int tmp = accountService.editPassword(id, password, newPassword);
 
-        if(tmp == 0) result.setReturnCode(ReturnCode.EDIT_PASS_ERROR);
-        if(tmp == 1) result.setReturnCode(ReturnCode.EDIT_PASS_PASSWORD_IS_ERROR);
-        if(tmp == 2) result.setReturnCode(ReturnCode.SUCCESS);
+        if (tmp == 0) result.setReturnCode(ReturnCode.EDIT_PASS_ERROR);
+        if (tmp == 1) result.setReturnCode(ReturnCode.EDIT_PASS_PASSWORD_IS_ERROR);
+        if (tmp == 2) result.setReturnCode(ReturnCode.SUCCESS);
 
         return result;
     }
@@ -82,12 +80,12 @@ public class AccountController extends BaseController{
      * 退出登录
      */
 
-    @RequestMapping(value = "/{id}",method = RequestMethod.DELETE)
-    public BaseResult<?> logout(@PathVariable("id") Long id){
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public BaseResult<?> logout(@PathVariable("id") Long id) {
         BaseResult<?> result = new BaseResult<>();
         int tmp = accountService.deleteSession(id);
-        if(tmp == 0) result.setReturnCode(ReturnCode.LOGOUT_ERROR);
-        if(tmp == 1) result.setReturnCode(ReturnCode.SUCCESS);
+        if (tmp == 0) result.setReturnCode(ReturnCode.LOGOUT_ERROR);
+        if (tmp == 1) result.setReturnCode(ReturnCode.SUCCESS);
 
         return result;
     }

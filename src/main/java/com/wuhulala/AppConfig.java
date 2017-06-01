@@ -1,6 +1,9 @@
 package com.wuhulala;
 
+import com.wuhulala.filter.JwtFilter;
+import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -8,7 +11,6 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 
 /**
  * @author Wuhulala
@@ -36,6 +38,13 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         multipartResolver.setMaxUploadSize(1024*1024*50);
         multipartResolver.setDefaultEncoding("UTF-8");
         return multipartResolver;
+    }
+    @Bean
+    public FilterRegistrationBean jwtFilter() {
+        final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+        registrationBean.setFilter(new JwtFilter());
+        registrationBean.addUrlPatterns("/api/*");
+        return registrationBean;
     }
 
 }

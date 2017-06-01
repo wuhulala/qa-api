@@ -1,6 +1,7 @@
 package com.wuhulala.service;
 
 
+import com.wuhulala.auth.JwtManager;
 import com.wuhulala.dal.mapper.AccountMapper;
 import com.wuhulala.dal.model.Account;
 import com.wuhulala.util.PasswordUtil;
@@ -8,12 +9,9 @@ import com.wuhulala.util.TokenUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
@@ -26,19 +24,15 @@ import java.util.Date;
 @Service
 public class AccountService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountService.class);
-    private static final String REDIS_PREFIX = "account:";
 
-    @Resource(name = "redisTemplate")
-    private RedisTemplate<String, Object> redisTemplate;
 
-    @Resource(name = "valueOperations")
-    private ValueOperations<String, Object> valueOperations;
-
+    private final JwtManager jwtManager;
     private final AccountMapper accountMapper;
 
     @Autowired
-    public AccountService(AccountMapper accountMapper) {
+    public AccountService(AccountMapper accountMapper,JwtManager jwtManager) {
         this.accountMapper = accountMapper;
+        this.jwtManager = jwtManager;
     }
 
 
@@ -50,10 +44,10 @@ public class AccountService {
         Account result = accountMapper.login(account);
 
         if (null != result) {
-            String token = TokenUtils.generateToken(result.getName(), getRolesString(result.getId()));
+            String token = TokenUtils.generateToken(result.getId(), result.getName(), getRolesString(result.getId()));
             account.setToken(token);
-            valueOperations.set(REDIS_PREFIX + result.getId(), token);
-            LOGGER.info("用户" + account.getId() + "登录成功");
+            jwtManager.addJwt(result.getId() + "", token);
+            LOGGER.info("用户" + result.getId() + "登录成功");
             account.setLastLogin(new Date());
             accountMapper.updateLastLogin(account);
             return account;
@@ -106,10 +100,9 @@ public class AccountService {
      * 1 删除成功
      */
     public int deleteSession(Long accountId) {
-        String key = REDIS_PREFIX.concat(String.valueOf(accountId));
-        if (valueOperations.get(key) != null) {
+        boolean flag = jwtManager.delJwt(accountId+"");
+        if (flag) {
             LOGGER.info("用户" + accountId + "退出登录");
-            redisTemplate.delete(key);
             return 1;
         }
         return 0;
