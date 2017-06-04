@@ -65,8 +65,13 @@ public class JwtFilter implements Filter {
             try {
                 final Claims claims = TokenUtils.parseToken(token);
                 String key = claims.getSubject();
-                if (manager.getJwt(key) == null)
+                String jwtValue = manager.getJwt(key);
+                if (jwtValue == null) {
                     throw new SignatureException("Invalid token");
+                }
+                if (!jwtValue.equals(token)){
+                    throw new SignatureException("Invalid token");
+                }
                 manager.refreshJwt(key);
                 request.setAttribute("claims", claims);
             } catch (final SignatureException e) {
