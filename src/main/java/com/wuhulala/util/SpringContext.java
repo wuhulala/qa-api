@@ -1,10 +1,9 @@
 package com.wuhulala.util;
 
+import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 /**
  * author： wuhulala
@@ -13,7 +12,7 @@ import javax.annotation.PostConstruct;
  * description: 作甚的
  */
 @Component
-public class SpringContext extends ApplicationObjectSupport {
+public class SpringContext implements ApplicationContextAware {
 
     private static ApplicationContext instance;
 
@@ -21,9 +20,8 @@ public class SpringContext extends ApplicationObjectSupport {
         return instance;
     }
 
-    @PostConstruct
-    private void init() {
-        instance = getApplicationContext();
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        instance = applicationContext;
     }
-
 }

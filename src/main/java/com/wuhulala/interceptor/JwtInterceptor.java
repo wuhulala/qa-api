@@ -1,22 +1,27 @@
-package com.wuhulala.filter;
+package com.wuhulala.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wuhulala.auth.JwtManager;
 import com.wuhulala.util.BaseResult;
 import com.wuhulala.util.ReturnCode;
-import com.wuhulala.util.SpringContext;
 import com.wuhulala.util.TokenUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureException;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * author： wuhulala
@@ -24,40 +29,34 @@ import java.io.IOException;
  * version: 1.0
  * description: 作甚的
  */
+public class JwtInterceptor implements HandlerInterceptor {
 
-public class JwtFilter implements Filter {
+    private Logger logger = LoggerFactory.getLogger(JwtInterceptor.class);
 
-    private Logger logger = LoggerFactory.getLogger(JwtFilter.class);
+    @Autowired
     private JwtManager manager;
+
+    private Set<String> excludedUrls = new HashSet<>();
 
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object o) throws Exception {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        String url = request.getRequestURI();
 
-        logger.debug("初始化 JwtFilter。。。。。。。。。。。。。。");
-    }
-
-
-    public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
-            throws IOException, ServletException {
-        ApplicationContext context = SpringContext.getContext();
-        manager = context.getBean(JwtManager.class);
-
-        final HttpServletRequest request = (HttpServletRequest) req;
-        final HttpServletResponse response = (HttpServletResponse) res;
-        final String authHeader = request.getHeader("authorization");
-
-        if ("OPTIONS".equals(request.getMethod())) {
+        if (this.isMatch(url)) {
+            return true;
+        } else if ("OPTIONS".equals(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
 
-            chain.doFilter(req, res);
+            return true;
         } else {
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 logger.error("Missing or invalid Authorization header");
                 writeErrorMsg(response, ReturnCode.ERROR_401);
-                return;
+                return false;
             }
 
             final String token = authHeader.substring(7);
@@ -69,7 +68,7 @@ public class JwtFilter implements Filter {
                 if (jwtValue == null) {
                     throw new SignatureException("Invalid token");
                 }
-                if (!jwtValue.equals(token)){
+                if (!jwtValue.equals(token)) {
                     throw new SignatureException("Invalid token");
                 }
                 manager.refreshJwt(key);
@@ -77,17 +76,42 @@ public class JwtFilter implements Filter {
             } catch (final SignatureException e) {
                 logger.error("Invalid token");
                 writeErrorMsg(response, ReturnCode.ERROR_401);
-                return;
+                return false;
             }
 
-            chain.doFilter(req, res);
+            return true;
         }
     }
 
     @Override
-    public void destroy() {
+    public void postHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, ModelAndView modelAndView) throws Exception {
 
     }
+
+    @Override
+    public void afterCompletion(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) throws Exception {
+
+    }
+
+    /**
+     * 判断是否与目标URL匹配。
+     *
+     * @param targetUrl
+     * @return
+     */
+    private boolean isMatch(String targetUrl) {
+        if (CollectionUtils.isNotEmpty(excludedUrls)) {
+            for (String configUrl : excludedUrls) {
+                if (StringUtils.isNotBlank(targetUrl)
+                        && StringUtils.isNotBlank(configUrl)
+                        && targetUrl.endsWith(configUrl)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     private void writeErrorMsg(HttpServletResponse response, ReturnCode returnCode) throws IOException {
         response.setCharacterEncoding("UTF-8");
@@ -98,5 +122,9 @@ public class JwtFilter implements Filter {
         BaseResult baseResult = new BaseResult();
         baseResult.setReturnCode(returnCode);
         response.getWriter().write(JSON.toJSONString(baseResult));
+    }
+
+    public void setExcludedUrls(Set<String> excludedUrls) {
+        this.excludedUrls = excludedUrls;
     }
 }
