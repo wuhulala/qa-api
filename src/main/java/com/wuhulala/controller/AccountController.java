@@ -1,6 +1,7 @@
 package com.wuhulala.controller;
 
 
+import com.wuhulala.ApiConstants;
 import com.wuhulala.dal.model.Account;
 import com.wuhulala.service.AccountService;
 import com.wuhulala.util.BaseResult;
@@ -19,7 +20,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/api/account")
+@CrossOrigin(ApiConstants.CROSS_ADDRESS)
 @Api(value = "account", description = "账户接口")
 public class AccountController extends BaseController {
     private final AccountService accountService;
