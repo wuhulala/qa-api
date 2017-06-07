@@ -8,7 +8,6 @@ import com.wuhulala.util.BaseResult;
 import com.wuhulala.util.ReturnCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 public class AccountController extends BaseController {
     private final AccountService accountService;
 
-    @Autowired
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }

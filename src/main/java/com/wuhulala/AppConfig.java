@@ -1,5 +1,6 @@
 package com.wuhulala;
 
+import com.wuhulala.auth.TestFilter;
 import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 import com.wuhulala.interceptor.JwtInterceptor;
 import org.apache.commons.collections.CollectionUtils;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.servlet.Filter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,24 +55,34 @@ public class AppConfig extends WebMvcConfigurerAdapter {
         multipartResolver.setDefaultEncoding("UTF-8");
         return multipartResolver;
     }
-//    @Bean
-//    public FilterRegistrationBean jwtFilter() {
-//        FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-//        //DelegatingFilterProxy httpBasicFilter = new DelegatingFilterProxy();
-//        registrationBean.setFilter(new JwtInterceptor());
-//        Map<String,String> m = new HashMap<String,String>();
-//        m.put("targetBeanName","jwtFilter");
-//        m.put("targetFilterLifecycle","true");
-//        registrationBean.setInitParameters(m);
-//        List<String> urlPatterns = new ArrayList<>();
-//        urlPatterns.add("/api*");
-//        registrationBean.setUrlPatterns(urlPatterns);
-//        return registrationBean;
-////        final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
-////        registrationBean.setFilter(new JwtInterceptor());
-////        registrationBean.setEnabled(false);
-////        registrationBean.addUrlPatterns("/api/*");
-////        return registrationBean;
-//    }
+
+
+
+/*    @Bean
+    public FilterRegistrationBean testFilter() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(new TestFilter());
+        registration.addUrlPatterns("*//*");
+        registration.addInitParameter("paramName", "paramValue");
+        registration.setName("testFilter");
+        registration.setOrder(1);
+        return registration;
+    }*/
+
+
+
+    /*@Bean
+    public DelegatingFilterProxy testProxy(){
+        DelegatingFilterProxy proxy = new DelegatingFilterProxy();
+        proxy.setTargetFilterLifecycle(true);
+        proxy.setTargetBeanName("testFilter");
+        return proxy;
+    }*/
+
+    @Bean
+    public Filter testFilter(){
+        System.out.println("-------------configuration testFilter---------------");
+        return new TestFilter();
+    }
 
 }
