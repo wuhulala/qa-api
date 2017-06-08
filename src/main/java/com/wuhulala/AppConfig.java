@@ -5,6 +5,7 @@ import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 import com.wuhulala.interceptor.JwtInterceptor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -58,16 +59,15 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
 
 
-/*    @Bean
-    public FilterRegistrationBean testFilter() {
+    @Bean
+    public FilterRegistrationBean demoFilter() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(new TestFilter());
-        registration.addUrlPatterns("*//*");
-        registration.addInitParameter("paramName", "paramValue");
-        registration.setName("testFilter");
-        registration.setOrder(1);
+        registration.setFilter(testFilter());
+        registration.addUrlPatterns("/api/*");
+        registration.setName("testFilter1");
+
         return registration;
-    }*/
+    }
 
 
 
@@ -82,6 +82,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public Filter testFilter(){
         System.out.println("-------------configuration testFilter---------------");
+
         return new TestFilter();
     }
 
