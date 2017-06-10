@@ -3,7 +3,6 @@ package com.wuhulala;
 import com.wuhulala.auth.TestFilter;
 import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 import com.wuhulala.interceptor.JwtInterceptor;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +14,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.Filter;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Wuhulala
@@ -36,10 +33,10 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     @Bean
     public JwtInterceptor jwtInterceptor(){
         JwtInterceptor result = new JwtInterceptor();
-        String urls = env.getProperty("jwt.excluded.urls");
-        Set<String> excludedUrls = new HashSet<>();
-        CollectionUtils.addAll(excludedUrls , urls.split(","));
-        result.setExcludedUrls(excludedUrls);
+        //String urls = env.getProperty("jwt.excluded.urls");
+        //Set<String> excludedUrls = new HashSet<>();
+        //CollectionUtils.addAll(excludedUrls , urls.split(","));
+        //result.setExcludedUrls(excludedUrls);
         return result;
     }
 

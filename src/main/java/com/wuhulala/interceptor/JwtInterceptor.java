@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,8 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * author： wuhulala
@@ -29,6 +30,7 @@ import java.util.Set;
  * version: 1.0
  * description: 作甚的
  */
+@ConfigurationProperties(prefix = "jwt.excluded")
 public class JwtInterceptor implements HandlerInterceptor {
 
     private Logger logger = LoggerFactory.getLogger(JwtInterceptor.class);
@@ -36,7 +38,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtManager manager;
 
-    private Set<String> excludedUrls = new HashSet<>();
+    private List<String> urls = new ArrayList<>();
 
 
     @Override
@@ -100,8 +102,8 @@ public class JwtInterceptor implements HandlerInterceptor {
      * @return
      */
     private boolean isMatch(String targetUrl) {
-        if (CollectionUtils.isNotEmpty(excludedUrls)) {
-            for (String configUrl : excludedUrls) {
+        if (CollectionUtils.isNotEmpty(urls)) {
+            for (String configUrl : urls) {
                 if (StringUtils.isNotBlank(targetUrl)
                         && StringUtils.isNotBlank(configUrl)
                         && targetUrl.endsWith(configUrl)) {
@@ -124,7 +126,11 @@ public class JwtInterceptor implements HandlerInterceptor {
         response.getWriter().write(JSON.toJSONString(baseResult));
     }
 
-    public void setExcludedUrls(Set<String> excludedUrls) {
-        this.excludedUrls = excludedUrls;
+    public List<String> getUrls() {
+        return urls;
+    }
+
+    public void setUrls(List<String> urls) {
+        this.urls = urls;
     }
 }

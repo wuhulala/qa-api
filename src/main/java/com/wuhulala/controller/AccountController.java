@@ -89,36 +89,37 @@ public class AccountController extends BaseController {
     }
 
 
-    class PasswordParam implements ValidParams<String> {
-        private String password;
-        private String new_password;
+}
 
-        public String getPassword() {
-            return password;
-        }
+class PasswordParam implements ValidParams<String> {
+    private String password;
+    private String new_password;
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+    public String getPassword() {
+        return password;
+    }
 
-        public String getNew_password() {
-            return new_password;
-        }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-        public void setNew_password(String new_password) {
-            this.new_password = new_password;
-        }
+    public String getNew_password() {
+        return new_password;
+    }
 
-        @Override
-        public String validParams() {
-            StringBuilder sb = new StringBuilder();
-            if (StringUtils.isEmpty(password)) {
-                sb.append("旧密码为空");
-            }
-            if (StringUtils.isEmpty(password)) {
-                sb.append("新密码为空");
-            }
-            return sb.toString();
+    public void setNew_password(String new_password) {
+        this.new_password = new_password;
+    }
+
+    @Override
+    public String validParams() {
+        StringBuilder sb = new StringBuilder();
+        if (StringUtils.isEmpty(password)) {
+            sb.append("旧密码为空");
         }
+        if (StringUtils.isEmpty(password)) {
+            sb.append("新密码为空");
+        }
+        return sb.toString();
     }
 }
