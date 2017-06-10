@@ -28,7 +28,7 @@ public class TntClass {
     }
 
     public TntClass(JwtManager jwtManager,String name){
-        System.out.println("My Name is "+ this.name +" , 我缓存中有 十吨TNT...." + jwtManager);
         this.name = name;
+        System.out.println("My Name is "+ this.name +" , 我缓存中有 十吨TNT...." + jwtManager);
     }
 }

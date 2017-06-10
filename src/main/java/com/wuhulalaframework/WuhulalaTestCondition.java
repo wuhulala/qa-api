@@ -20,7 +20,7 @@ import java.util.List;
  * description: 作甚的
  */
 @Configuration
-@ConditionalOnMissingClass("TntClass")
+// @ConditionalOnMissingClass({"TntClass22"}) 没啥鸟用
 public class WuhulalaTestCondition {
 
     private JwtManager jwtManager;
@@ -42,8 +42,29 @@ public class WuhulalaTestCondition {
     @Bean
     @ConditionalOnMissingBean
     public TntClass tntClass(){
-        System.out.println("我没有TNT Class、、、");
+        System.out.println("===========我没有TNT Bean、、、===========");
         return new TntClass(new JwtManager(), "Red TNT");
+    }
+
+    @Bean
+    @ConditionalOnMissingClass({"com.wuhulala.TntClass"}) //不会进入 必须全路径
+    public List testConditionalOnMissingClass(){
+        System.out.println("============================com.wuhulala.TntClass 竟然没有。。。=====================");
+        return new ArrayList();
+    }
+
+    @Bean
+    @ConditionalOnMissingClass({"com.wuhulala.TntClass2"}) //进入
+    public List testConditionalOnMissingClass2(){
+        System.out.println("============================com.wuhulala.TntClass2 竟然没有。。。=====================");
+        return new ArrayList();
+    }
+
+    @Bean
+    @ConditionalOnMissingClass({"com.wuhulala.TntClass2","TTTTT"}) //逻辑为 and
+    public List testConditionalOnMissingClass3(){
+        System.out.println("============================com.wuhulala.TntClass2 and TTTT 竟然都没有。。。=====================");
+        return new ArrayList();
     }
 
     @Bean
@@ -53,7 +74,7 @@ public class WuhulalaTestCondition {
             matchIfMissing = true
     )
     public List testConditionalOnProperty(){
-        System.out.println("OrderedHttpPutFormContentFilter 关闭了");
+        System.out.println("===============================【OrderedHttpPutFormContentFilter 关闭了】");
         return new ArrayList();
     }
 }
