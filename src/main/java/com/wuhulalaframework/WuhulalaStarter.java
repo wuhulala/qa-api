@@ -1,6 +1,5 @@
 package com.wuhulalaframework;
 
-import com.wuhulala.TntClass;
 import com.wuhulala.auth.JwtManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -21,7 +20,7 @@ import java.util.List;
  */
 @Configuration
 // @ConditionalOnMissingClass({"TntClass22"}) 没啥鸟用
-public class WuhulalaTestCondition {
+public class WuhulalaStarter {
 
     private JwtManager jwtManager;
 
@@ -29,12 +28,12 @@ public class WuhulalaTestCondition {
         System.out.println("------------WuhulalaTestCondition--------------");
     }*/
 
-    public WuhulalaTestCondition(JwtManager jwtManager){
+    public WuhulalaStarter(JwtManager jwtManager){
         System.out.println("------------WuhulalaTestCondition--------------" + jwtManager);
     }
 
 
-    public WuhulalaTestCondition(){
+    public WuhulalaStarter(){
         System.out.println("------------WuhulalaTestCondition2222222--------------" + jwtManager);
     }
 
@@ -47,9 +46,9 @@ public class WuhulalaTestCondition {
     }
 
     @Bean
-    @ConditionalOnMissingClass({"com.wuhulala.TntClass"}) //不会进入 必须全路径
+    @ConditionalOnMissingClass({"com.wuhulalaframework.TntClass"}) //不会进入 必须全路径
     public List testConditionalOnMissingClass(){
-        System.out.println("============================com.wuhulala.TntClass 竟然没有。。。=====================");
+        System.out.println("============================com.wuhulalaframework.TntClass 竟然没有。。。=====================");
         return new ArrayList();
     }
 
