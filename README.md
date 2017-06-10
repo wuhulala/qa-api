@@ -1,54 +1,13 @@
-#QA系统 restapi
+#QA系统服务端
 
+> 此系统主要为了记录在新的人介入到项目组中时会遇到坑，方便检索找方法跳坑，此系统面向内部人员，所以登录一些权限要求会严格一点，顺便把自己的权限框架用起来。
 
-
-##技术
+##技术<前后端分离项目，暂时很菜，欢迎拍砖。>
 1. springBoot
 2. mybatis
-3. redis
-4. swaggerUI
-5. jwt
+3. redis-cache
+4. jwt
 
+##License
 
-本来测试了好多种方案，后来莫名奇妙使用以下方式，发现Filter的autowire就可以用了，至于原理还没有发现，估计spring-boot对Filter这种扫描到之后进行了特殊处理，因为从打印的日志来看，boot把这些filter都进行了bean管理。
- 
-```java
-@Bean
-    public Filter testFilter(){
-        System.out.println("-------------configuration testFilter---------------");
-        return new TestFilter();
-    }
-
-```
- 
-```java
-public class TestFilter implements Filter{
-
-    @Autowired
-    JwtManager jwtManager;
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("TestFilter--------init----------------------" + jwtManager);
-
-    }
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        System.out.println("TestFilter-----------doFilter-------------------" + jwtManager);
-    }
-
-    @Override
-    public void destroy() {
-        System.out.println("TestFilter------------------------------" + jwtManager);
-
-    }
-}
-
-```
-**打印日志**
-```
-2017-06-07 19:16:00.752  INFO 3468 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'testFilter' to: [/*]
-TestFilter--------init----------------------com.wuhulala.auth.JwtManager@e685943
-
-```
+The QaSystem is released under version 2.0 of the Apache License.
