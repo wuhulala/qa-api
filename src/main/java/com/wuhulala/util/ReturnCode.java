@@ -20,6 +20,8 @@ public enum ReturnCode {
 	LOGIN_ERROR(555,"1002","用户名或密码错误"),
 	LOGIN_NAME_IS_NOT_EXIST(555,"1003","用户名不存在"),
 	LOGIN_PASSWORD_IS_ERROR(555,"1004","密码错误"),
+	NOT_LOGIN_ERROR(401,"1005","用户未登录"),
+
 
 	//注册信息
 	REGISTER_SUCCESS(200,"1101","注册成功"),
@@ -32,8 +34,11 @@ public enum ReturnCode {
 	EDIT_PASS_PASSWORD_IS_ERROR(555,"1203","原密码错误"),
 
 	//退出
-	LOGOUT_ERROR(555,"1301","退出登录错误"), ERROR_401(401,"401" ,"没有权限" );
+	LOGOUT_ERROR(555,"1301","退出登录错误"),
+	ERROR_401(401,"401" ,"没有权限" ),
 
+
+	IP_MAX_ERROR(555,"1401","您的访问太过频繁");
 	public static ReturnCode getReturnCode(String returnCode){
 		for( ReturnCode e : ReturnCode.values() ){
 			if( e.getMsgCode().equals(returnCode)){

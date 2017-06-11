@@ -1,9 +1,8 @@
 package com.wuhulala.interceptor;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wuhulala.auth.JwtManager;
-import com.wuhulala.util.BaseResult;
+import com.wuhulala.exception.NotLoginException;
+import com.wuhulala.util.FilterUtils;
 import com.wuhulala.util.ReturnCode;
 import com.wuhulala.util.TokenUtils;
 import io.jsonwebtoken.Claims;
@@ -20,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +55,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 logger.error("Missing or invalid Authorization header");
-                writeErrorMsg(response, ReturnCode.ERROR_401);
+                FilterUtils.writeErrorMsg(response, ReturnCode.ERROR_401);
                 return false;
             }
 
@@ -68,16 +66,21 @@ public class JwtInterceptor implements HandlerInterceptor {
                 String key = claims.getSubject();
                 String jwtValue = manager.getJwt(key);
                 if (jwtValue == null) {
-                    throw new SignatureException("Invalid token");
+                    throw new NotLoginException("Not Login");
                 }
                 if (!jwtValue.equals(token)) {
                     throw new SignatureException("Invalid token");
                 }
                 manager.refreshJwt(key);
                 request.setAttribute("claims", claims);
-            } catch (final SignatureException e) {
+            }catch (final NotLoginException e){
+                logger.error(e.getMessage());
+                FilterUtils.writeErrorMsg(response, ReturnCode.NOT_LOGIN_ERROR);
+                return false;
+            }
+            catch (final SignatureException e) {
                 logger.error("Invalid token");
-                writeErrorMsg(response, ReturnCode.ERROR_401);
+                FilterUtils.writeErrorMsg(response, ReturnCode.ERROR_401);
                 return false;
             }
 
@@ -115,16 +118,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     }
 
 
-    private void writeErrorMsg(HttpServletResponse response, ReturnCode returnCode) throws IOException {
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        ObjectMapper mapper = new ObjectMapper();
-        BaseResult baseResult = new BaseResult();
-        baseResult.setReturnCode(returnCode);
-        response.getWriter().write(JSON.toJSONString(baseResult));
-    }
 
     public List<String> getUrls() {
         return urls;

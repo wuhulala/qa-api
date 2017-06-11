@@ -87,6 +87,7 @@ public class AccountService {
             if (PasswordUtil.authenticatePassword(account.getPassword(), password)) return 1;
             account.setPassword(PasswordUtil.createPassword(newPassword));
             accountMapper.updatePassword(account);
+            jwtManager.delJwt(id +"");
             return 2;
         }
         return 0;

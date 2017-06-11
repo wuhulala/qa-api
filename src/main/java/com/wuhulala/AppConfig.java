@@ -1,6 +1,6 @@
 package com.wuhulala;
 
-import com.wuhulala.auth.TestFilter;
+import com.wuhulala.auth.IpFilter;
 import com.wuhulala.interceptor.ExecuteTimeHandlerInterceptor;
 import com.wuhulala.interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +26,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     private Environment env;
 
     @Bean
-    public ExecuteTimeHandlerInterceptor executeTimeHandlerInterceptor(){
+    public ExecuteTimeHandlerInterceptor executeTimeHandlerInterceptor() {
         return new ExecuteTimeHandlerInterceptor();
     }
 
     @Bean
-    public JwtInterceptor jwtInterceptor(){
+    public JwtInterceptor jwtInterceptor() {
         JwtInterceptor result = new JwtInterceptor();
         //String urls = env.getProperty("jwt.excluded.urls");
         //Set<String> excludedUrls = new HashSet<>();
@@ -47,22 +47,20 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public MultipartResolver multipartResolver(){
+    public MultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(1024*1024*50);
+        multipartResolver.setMaxUploadSize(1024 * 1024 * 50);
         multipartResolver.setDefaultEncoding("UTF-8");
         return multipartResolver;
     }
 
 
-
     @Bean
-    public FilterRegistrationBean demoFilter() {
+    public FilterRegistrationBean ipFilter() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(testFilter());
-        registration.addUrlPatterns("/api/*");
-        registration.setName("testFilter1");
-
+        registration.setFilter(newIpFilter());
+        registration.addUrlPatterns("*");
+        registration.setName("ipFilter");
         return registration;
     }
 
@@ -77,10 +75,8 @@ public class AppConfig extends WebMvcConfigurerAdapter {
     }*/
 
     @Bean
-    public Filter testFilter(){
-        System.out.println("-------------configuration testFilter---------------");
-
-        return new TestFilter();
+    public Filter newIpFilter() {
+        return new IpFilter();
     }
 
 }
