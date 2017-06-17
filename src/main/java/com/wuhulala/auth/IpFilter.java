@@ -38,7 +38,6 @@ public class IpFilter implements Filter{
 
         if(this.enabled){
             String ip = servletRequest.getRemoteAddr();
-            System.out.println("开启了ip 拦截器。。。");
             if(validIpPass(ip)){
                 filterChain.doFilter(servletRequest,servletResponse);
             }else{
@@ -56,10 +55,13 @@ public class IpFilter implements Filter{
     private boolean validIpPass(String ip) {
         Integer useNumber = this.cacheService.getValue(ip);
         if(useNumber == null){
-            this.cacheService.setValue(ip, 1, interval);
+            this.cacheService.setValue(ip, 2, interval);
             return true;
         }else if(useNumber <= this.count){
-            this.cacheService.setValue(ip, useNumber + 1 ,this.cacheService.getExpireSeconds(ip));
+            long remainSeconds = this.cacheService.getExpireSeconds(ip);
+            if(remainSeconds != 0){
+                this.cacheService.setValue(ip, useNumber + 1, remainSeconds);
+            }
             return true;
         }else{
             return false;
