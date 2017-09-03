@@ -3,6 +3,8 @@ package com.wuhulala.controller;
 import com.wuhulala.ApiConstants;
 import com.wuhulala.util.BaseResult;
 import com.wuhulala.util.ReturnCode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -16,6 +18,8 @@ public class BaseController {
 
     @Value("${spring.profiles.active}")
     private String profileName;
+
+    private final Logger logger = LoggerFactory.getLogger(BaseController.class);
 
     /**
      * 通用错误处理
@@ -31,6 +35,7 @@ public class BaseController {
             //如果不是生产环境，把异常写出来
             result.setData(e.getMessage());
         }
+        logger.error("统一异常捕获[" + e.getMessage() + "]", e);
         return result;
     }
 

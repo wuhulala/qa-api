@@ -20,6 +20,7 @@ public class Qa{
     private String img;
     private Long authorId;
     private Account author;
+    private int type;
     private Date gmtCreate;
     private Date gmtModify;
 
@@ -109,5 +110,13 @@ public class Qa{
 
     public void setGmtModify(Date gmtModify) {
         this.gmtModify = gmtModify;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

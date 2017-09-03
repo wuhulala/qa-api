@@ -16,6 +16,7 @@
         <result column="authorId" property="author_id"/>
         <result column="gmtCreate" property="gmt_create"/>
         <result column="gmtModify" property="gmt_modify"/>
+        <result column="type" property="type"/>
     </resultMap>
 
     <resultMap type="Qa" id="PageBaseResult">
@@ -29,6 +30,7 @@
         <result column="author_id" property="authorId"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modify" property="gmtModify"/>
+        <result column="type" property="type"/>
         <association property="author" resultMap="AuthorBaseResult"/>
     </resultMap>
 
@@ -45,6 +47,7 @@
         a.like_number as like_number,
         a.reply_number as reply_number,
         a.img as img,
+        a.type as type,
         a.author_id as author_id,
         a.gmt_create as gmt_create,
         a.gmt_modify as gmt_create,
@@ -52,11 +55,11 @@
     </sql>
 
     <sql id="BaseColumn">
-        id,title,content,read_number,like_number,reply_number,img,author_id,gmt_create,gmt_modify
+        id,title,content,read_number,like_number,reply_number,img,author_id,gmt_create,gmt_modify,type
     </sql>
 
     <sql id="InsertColumn">
-        title,content,
+        type,title,content,
         <if test="img != null and img != ''">
             #{img},
         </if>
@@ -64,13 +67,13 @@
     </sql>
 
     <sql id="InsertListColumn">
-        title,content,img,author_id,gmt_create,gmt_modify
+        type,title,content,img,author_id,gmt_create,gmt_modify
     </sql>
 
 
     <insert id="insert"  useGeneratedKeys="true" keyProperty="id" keyColumn="id" >
         insert into tb_qa(<include refid="InsertColumn"/>)
-        values(#{title},#{content},
+        values(#{type},#{title},#{content},
        <if test="img != null and img != ''">
             #{img},
         </if>
@@ -81,9 +84,13 @@
         insert into tb_qa(<include refid="InsertListColumn"/>)
         values
         <foreach collection="list" separator="," index="index" item="item">
-            (#{item.title},#{item.content},
+            (#{item.type},
+            #{item.title},
+            #{item.content},
             #{item.img},
-            #{item.authorId},now(),now())
+            #{item.authorId},
+            now(),
+            now())
         </foreach>
 
     </insert>
