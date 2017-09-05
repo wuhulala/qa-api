@@ -1,0 +1,58 @@
+version: '2'
+services:
+    couchbase:
+        image:
+           couchbase
+        ports:
+           - 8091-8094:8091-8094 
+           - 11210:11210
+           
+    nginx:
+        image:
+            wuhulala/nginx
+        ports:
+           - 10080:80
+        volumes:
+           - F:/code/qa-system/qa-web/www:/var/www/html/website
+        command:
+           nginx
+    db:
+        image: mysql:5.7.19
+        ports:
+           - 3306:3306
+        volumes:
+           - G:/mysql/data:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
+    
+    redis:
+        image: redis:3.2.10
+        ports:
+           - 6379:6379
+        volumes:
+           - G:/redis/data:/data
+    api_1:
+        image: wuhulala/api
+        links:
+           - db
+           - redis
+    api_2:
+        image: wuhulala/api
+        links:
+           - db
+           - redis
+    api_3:
+        image: wuhulala/api
+        links:
+           - db
+           - redis
+    api_gateway: 
+        image: wuhulala/gateway
+        ports:
+            - 9001:80
+        links:
+            - api_1
+            - api_2
+            - api_3
+        command:
+           nginx
