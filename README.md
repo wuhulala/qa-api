@@ -14,6 +14,11 @@
 6. mysql
 7. nginx
 
+## V2.0 设想
+1. 加入全文检索，引入elasticsearch
+2. 引入日志分析
+3. 消息队列
+4. 优化UI，以及前端架构
 
 ## License
 
